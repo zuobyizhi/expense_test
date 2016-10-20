@@ -55,6 +55,32 @@ def jparser(json):
 		return json.loads(json.decode('gb18030').encode('utf8'))
 	except:
 		return []
+		
+def bconsume():
+	global gtype
+	return gtype == '0'
+	
+def breceive():
+	global gtype
+	return gtype == '1'
+	
+def bfixconsume():
+	global gtype
+	return gtype == '2'
+	
+def bfixreceive():
+	global gtype
+	return gtype == '3'
+    
+def maketype(_use):
+	if _use == unicode("领用", 'eucgb2312_cn'):
+		return '1'
+	elif _use == unicode("固定消费", 'eucgb2312_cn'):
+		return '2'
+	elif _use == unicode("固定领用", 'eucgb2312_cn'):
+		return '3'
+	else:
+		return '0'
 
 #init
 def initmacinfo(mj):
@@ -129,54 +155,13 @@ def getMacInfo():
 			global labsysnote
 			labsysnote['text'] = gnote
 
-			#global gtype
-			#global labtitle
-			#global labctrltitle
-			#global gnormaltip
-			#if guse == unicode("领用", 'eucgb2312_cn'):
-				#labtitle['text']=unicode("物资领用", 'eucgb2312_cn')
-				#gnormaltip=unicode('刷卡后完成领用\n','eucgb2312_cn')
-				#labtip['text']=gnormaltip
-				#gtype='1'
-				#labctrltitle['text'] = unicode('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
-			#elif guse == unicode("固定消费", 'eucgb2312_cn'):
-				##labtitle['text']=unicode("固定消费", 'eucgb2312_cn')
-				#gtype='2'
-				#labtitle['text']=unicode("内部消费系统", 'eucgb2312_cn')
-				#gnormaltip=unicode('刷卡后完成消费\n','eucgb2312_cn')
-				#labtip['text']=gnormaltip
-				#getgoodinfo(macjson['Message']['machineRemark'].encode('utf8'))
-				#print macjson['Message']['machineRemark']
-				#labctrltitle['text'] = unicode('在【读卡器】上刷卡完成消费', 'eucgb2312_cn')
-			#elif guse == unicode("固定领用", 'eucgb2312_cn'):
-				#gtype='3'
-				#labtitle['text']=unicode("物资领用", 'eucgb2312_cn')
-				#gnormaltip=unicode('刷卡后完成领用\n','eucgb2312_cn')
-				#labtip['text']=gnormaltip
-				#getgoodinfo(macjson['Message']['machineRemark'].encode('utf8'))
-				#print macjson['Message']['machineRemark']
-				#labctrltitle['text'] = unicode('在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
-			#else:
-				#gtype='0'
-				#labtitle['text']=unicode("内部消费系统", 'eucgb2312_cn')
-				#labctrltitle['text'] = unicode('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费', 'eucgb2312_cn')
-				#gnormaltip=unicode('请扫描物品条码\n','eucgb2312_cn')
-				#labtip['text']=gnormaltip
-				#labtip['fg']='#333333'
 			initUI(macjson)
 
 		else:
 			use=macjson['Message']['machineUse']
 			pretype = ''
 			global gtype
-			if use == unicode("领用", 'eucgb2312_cn'):
-				pretype='1'
-			elif use == unicode("固定消费", 'eucgb2312_cn'):
-				pretype='2'
-			elif use == unicode("固定领用", 'eucgb2312_cn'):
-				pretype='3'
-			else:
-				pretype='0'
+			pretype = maketype(use)
 			if (gtype != pretype):
 				initUI(macjson)
 				print "666"
@@ -303,12 +288,11 @@ def getgoodinfo(code):
 	global hosturl
 	print "getgoodinfo: " + (glocation) + " " + (guse)
 	giurl=''
-	global gtype
-	if gtype == '1':
+	if breceive():
 		giurl=hosturl+'/warehouse/goods/barcode?use=正常销售,促销,非卖品,食堂&code='+code+'&location='
-	elif gtype == '2':
+	elif bfixconsume():
 		giurl=hosturl+'/warehouse/goods/barcode?use=正常销售,促销,食堂&code='+code+'&location='
-	elif gtype == '3':
+	elif bfixreceive():
 		giurl=hosturl+'/warehouse/goods/barcode?use=正常销售,促销,非卖品,食堂&code='+code+'&location='
 	else:
 		giurl=hosturl+'/warehouse/goods/barcode?use=正常销售,促销&code='+code+'&location='
@@ -327,24 +311,18 @@ def getgoodinfo(code):
 				timer.cancel()
 			global ggoodcode
 			global ggoodprice
-			global gtype
 			ggoodcode=mj['Message']['goodsID']
-			if gtype == '0':
+			if bconsume():
 				labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName'] + unicode("\n价格:",'eucgb2312_cn') + str(mj['Message']['goodsPrice'])
-			elif gtype=='1':
+			elif breceive():
 				labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName']
-			elif gtype=='3':
+			elif bfixreceive():
 				labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName']
 			else:
 				labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName'] + unicode("\n价格:",'eucgb2312_cn') + str(mj['Message']['goodsPrice'])
 			ggoodprice = str(mj['Message']['goodsPrice'])
-			global gtype
-			if gtype == '2':
-				print "gtype = 2"
-				return
-			if gtype == '3':
-				print "gtype = 3"
-				return
+			if bfixreceive() or bfixconsume():
+				return # 固定项目获取物品不倒数
 			global cur
 			global gstate
 			if gstate=='15':
@@ -359,7 +337,6 @@ def getgoodinfo(code):
 			global labtip
 			labtip['text']=mj['Message']
 			labtip['fg']='red'
-			global gtype
 			show10sec()
 	else:
 		global labtip
@@ -412,10 +389,7 @@ def dealsend(id):
 		edit.delete(0,len(edit.get()))
 		sendjson=json.loads(r.decode('gb18030').encode('utf8'))
 		if sendjson['RetSucceed'] & sendjson['Succeed']:
-			global gtype
-			if gtype == '1':
-				labtip['text']=unicode("领用成功！\n", 'eucgb2312_cn')
-			elif gtype == '3':
+			if breceive() or bfixreceive():
 				labtip['text']=unicode("领用成功！\n", 'eucgb2312_cn')
 			else:
 				labtip['text']=unicode("消费成功！\n", 'eucgb2312_cn')
@@ -452,18 +426,16 @@ def func():
 	global L3
 	L3['text']=str(cur)
 	global labtip
-	global gtype
-	if gtype == '1':
+	if breceive():
 		labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成领用。\n", 'eucgb2312_cn')
 		labtip['fg']='#333333'
-	elif gtype == '0':
+	elif bconsume():
 		labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成消费，本次消费金额为" + ggoodprice + "元。", 'eucgb2312_cn')
 		labtip['fg']='#333333'
 	else:
 		pass
 	if cur==0:
 		clearAll()
-		pass
 	else:
 		cur=cur-1
 		timerstart()
@@ -493,7 +465,6 @@ def timerstart():
 def clearAll():
 	global ggoodcode
 	global gnormaltip
-	global gtype
 	global gstate
 	global labtip
 	global gpreid
@@ -503,10 +474,7 @@ def clearAll():
 	labtip['fg']='#333333'
 	L3['text']=''
 	gstate=''
-	if gtype == '0':
-		labgood['text']=unicode("\n\n\n", 'eucgb2312_cn')
-		ggoodcode=''
-	if gtype == '1':
+	if bconsume() or breceive():
 		labgood['text']=unicode("\n\n\n", 'eucgb2312_cn')
 		ggoodcode=''
 
