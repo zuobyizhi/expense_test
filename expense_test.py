@@ -507,37 +507,38 @@ def worker(*arg):
 		global gdisable
 		gdisable = True
 
-if guse == unicode("领用", 'eucgb2312_cn'):
-	labtitle['text']=unicode("物资领用", 'eucgb2312_cn')
-	gtype='1'
-	labctrltitle['text'] = unicode('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
-	gnormaltip=unicode('刷卡后完成领用\n','eucgb2312_cn')
-	labtip['text']=gnormaltip
-elif guse == unicode("固定消费", 'eucgb2312_cn'):
-	#labtitle['text']=unicode("固定消费", 'eucgb2312_cn')
-	gtype='2'
-	gnormaltip=unicode('刷卡后完成消费\n','eucgb2312_cn')
-	labtip['text']=gnormaltip
-	getgoodinfo(macjson['Message']['machineRemark'].encode('utf8'))
-	print macjson['Message']['machineRemark']
-	gremark = macjson['Message']['machineRemark']
-	labctrltitle['text'] = unicode('在【读卡器】上刷卡完成消费', 'eucgb2312_cn')
-elif guse == unicode("固定领用", 'eucgb2312_cn'):
-	gtype='3'
-	labtitle['text']=unicode("物资领用", 'eucgb2312_cn')
-	gnormaltip=unicode('刷卡后完成领用\n','eucgb2312_cn')
-	labtip['text']=gnormaltip
-	getgoodinfo(macjson['Message']['machineRemark'].encode('utf8'))
-	print macjson['Message']['machineRemark']
-	gremark = macjson['Message']['machineRemark']
-	labctrltitle['text'] = unicode('在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
-else:
-	gtype='0'
-	gnormaltip=unicode('请扫描物品条码\n','eucgb2312_cn')
+# if guse == unicode("领用", 'eucgb2312_cn'):
+# 	labtitle['text']=unicode("物资领用", 'eucgb2312_cn')
+# 	gtype='1'
+# 	labctrltitle['text'] = unicode('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
+# 	gnormaltip=unicode('刷卡后完成领用\n','eucgb2312_cn')
+# 	labtip['text']=gnormaltip
+# elif guse == unicode("固定消费", 'eucgb2312_cn'):
+# 	#labtitle['text']=unicode("固定消费", 'eucgb2312_cn')
+# 	gtype='2'
+# 	gnormaltip=unicode('刷卡后完成消费\n','eucgb2312_cn')
+# 	labtip['text']=gnormaltip
+# 	getgoodinfo(macjson['Message']['machineRemark'].encode('utf8'))
+# 	print macjson['Message']['machineRemark']
+# 	gremark = macjson['Message']['machineRemark']
+# 	labctrltitle['text'] = unicode('在【读卡器】上刷卡完成消费', 'eucgb2312_cn')
+# elif guse == unicode("固定领用", 'eucgb2312_cn'):
+# 	gtype='3'
+# 	labtitle['text']=unicode("物资领用", 'eucgb2312_cn')
+# 	gnormaltip=unicode('刷卡后完成领用\n','eucgb2312_cn')
+# 	labtip['text']=gnormaltip
+# 	getgoodinfo(macjson['Message']['machineRemark'].encode('utf8'))
+# 	print macjson['Message']['machineRemark']
+# 	gremark = macjson['Message']['machineRemark']
+# 	labctrltitle['text'] = unicode('在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
+# else:
+# 	gtype='0'
+# 	gnormaltip=unicode('请扫描物品条码\n','eucgb2312_cn')
 
 def initUI(macjson):
 	global gtype
 	global labtip
+	global labgood
 	global labtitle
 	global labctrltitle
 	global gnormaltip
@@ -549,6 +550,7 @@ def initUI(macjson):
 		gtype='1'
 		labctrltitle['text'] = unicode('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
 		labsysnote['text'] = gnote
+		labgood['text']=unicode("\n\n\n", 'eucgb2312_cn')
 	elif guse == unicode("固定消费", 'eucgb2312_cn'):
 		#labtitle['text']=unicode("固定消费", 'eucgb2312_cn')
 		gtype='2'
@@ -580,6 +582,9 @@ def initUI(macjson):
 		labtip['text']=gnormaltip
 		labtip['fg']='#333333'
 		labsysnote['text'] = gnote
+		labgood['text']=unicode("\n\n\n", 'eucgb2312_cn')
+
+initUI(macjson)
 
 if gdisable:
 	labtip['text']=gerrormsg
