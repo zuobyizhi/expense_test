@@ -513,14 +513,14 @@ def func(): # 15秒倒数
 	if breceive():
 		# labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成领用。\n", 'eucgb2312_cn')
 		if goodsRecorder.full(ggoodcode):
-			labtip['text']=unicode("你已不能添加新物品。\n请在"+str(cur)+"秒内刷卡完成领用；", 'eucgb2312_cn')
+			labtip['text']=unicode("你已不能添加新物品。\n请在"+str(cur)+"秒内刷卡完成领用。", 'eucgb2312_cn')
 		else:
 			labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成领用；\n如需领取多件物品，请继续扫码。", 'eucgb2312_cn')
 		labtip['fg']='#333333'
 	elif bconsume():
 		# labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成消费，本次消费金额为" + ggoodprice + "元。", 'eucgb2312_cn')
 		if goodsRecorder.full(ggoodcode):
-			labtip['text']=unicode("\你已不能添加新商品。n请在"+str(cur)+"秒内刷卡完成消费；", 'eucgb2312_cn')
+			labtip['text']=unicode("你已不能添加新商品。\n请在"+str(cur)+"秒内刷卡完成消费。", 'eucgb2312_cn')
 		else:
 			labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成消费；\n如需购买多件商品，请继续扫码。", 'eucgb2312_cn')
 		labtip['fg']='#333333'
