@@ -98,14 +98,18 @@ class GoodsRecorder:
 			self.goods[goodid] = 1
 		return self
 	def full(self, goodid):
-		m = 10
+		m = 2#10
 		l = len(self.goods.keys())
 		if m > l:
-			return True
+			print "f1"
+			return False
 		elif m == l:
+			print "f2"
+			print not goodid in self.goods.keys()
 			return not goodid in self.goods.keys()
 		else:
-			return False
+			print "f3"
+			return True
 	def getString(self):
 		strg = ''
 		strn = ''
@@ -355,9 +359,13 @@ def getgoodinfo(code):
 				timer.cancel()
 			global ggoodcode
 			global ggoodprice
+			global goodsRecorder
 			ggoodcode=mj['Message']['goodsID']
 			ggoodprice = str(mj['Message']['goodsPrice'])
-			if bconsume():
+			if goodsRecorder.full(ggoodcode):
+				labtip['text']=unicode("你已不能添加新物品。")
+				labgood['text']=unicode("您最多可以添加10种商品\n已添加", 'eucgb2312_cn') + str(goodsRecorder.goodsnum) + unicode("件商品	总价格:",'eucgb2312_cn') + ggoodprice + unicode("元",'eucgb2312_cn')
+			elif bconsume():
 				global goodsRecorder
 				goodsRecorder.addgood(ggoodcode, float(ggoodprice))
 				ggoodprice = str(goodsRecorder.goodstotal)
@@ -498,7 +506,11 @@ def func(): # 15秒倒数
 	global L3
 	L3['text']=str(cur)
 	global labtip
-	if breceive():
+	global goodsRecorder
+	global ggoodcode
+	if goodsRecorder.full(ggoodcode):
+		labtip['text']=unicode("你已不能添加新物品。")
+	elif breceive():
 		# labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成领用。\n", 'eucgb2312_cn')
 		labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成领用；\n如需领取多件物品，请继续扫码。", 'eucgb2312_cn')
 		labtip['fg']='#333333'
