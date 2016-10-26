@@ -8,6 +8,7 @@ import json
 import threading
 import sys
 import traceback
+import pyglet
 
 print sys.getdefaultencoding()
 if len(sys.argv) == 1:
@@ -129,6 +130,31 @@ class GoodsRecorder:
 		self.goodstotal = 0.0
 		
 goodsRecorder = GoodsRecorder()
+
+# ------------语音------------begin
+class Speaker:
+	player = ""
+	opened = True
+	def __init__(self):
+		self.player = pyglet.media.Player()
+	def speak(self,file):
+		if not self.opened:
+			return # speaker关闭
+		try:
+			source=pyglet.media.load(file)
+			self.player.queue(source)
+			self.player.play()
+		except:
+			print "speaker except."
+			traceback.print_exc()
+		
+speaker = Speaker()
+
+def speak(file):
+	global speaker
+	f = "yuyin/%s.wav"%file
+	speaker.speak(f)
+# ------------语音------------end
 
 #init
 def initmacinfo(mj):
@@ -365,10 +391,12 @@ def getgoodinfo(code):
 			if goodsRecorder.full(ggoodcode):
 				labtip['text']=unicode("你已不能添加新物品。")
 				labgood['text']=unicode("您最多可以添加10种商品\n已添加", 'eucgb2312_cn') + str(goodsRecorder.goodsnum) + unicode("件商品	总价格:",'eucgb2312_cn') + ggoodprice + unicode("元",'eucgb2312_cn')
+				speak("Full")
 			elif bconsume():
 				global goodsRecorder
 				goodsRecorder.addgood(ggoodcode, float(ggoodprice))
 				ggoodprice = str(goodsRecorder.goodstotal)
+				speak("ScanSuccess")
 				if goodsRecorder.goodsnum == 1:
 					labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName'] + unicode("\n价格:",'eucgb2312_cn') + ggoodprice + unicode("元",'eucgb2312_cn')
 				else:
@@ -376,15 +404,18 @@ def getgoodinfo(code):
 			elif breceive():
 				global goodsRecorder
 				goodsRecorder.addgood(ggoodcode)
+				speak("ScanSuccess")
 				if goodsRecorder.goodsnum == 1:
 					labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName']
 				else:
 					labgood['text']=unicode("您最多可以添加10种物品\n已添加", 'eucgb2312_cn') + str(goodsRecorder.goodsnum) + unicode("件物品",'eucgb2312_cn')
 			elif bfixreceive():
 				labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName']
+				speak("ScanSuccess")
 				return
 			else:
 				labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName'] + unicode("\n价格:",'eucgb2312_cn') + ggoodprice
+				speak("ScanSuccess")
 				return
 			# if bfixreceive() or bfixconsume():
 			#	return # 固定项目获取物品不倒数
@@ -410,6 +441,7 @@ def getgoodinfo(code):
 				clearAll()
 				labtip['text']=mj['Message']
 				labtip['fg']='red'
+			speak("GoodInfoFail")
 			show10sec()
 	else:
 		global labtip
@@ -417,6 +449,7 @@ def getgoodinfo(code):
 		labtip['fg']='red'
 		global edit
 		edit.delete(0,len(edit.get()))
+		speak("OperationFail")
 		show10sec()
 		print 'err'
 
@@ -437,6 +470,7 @@ def dealsend(id):
 			global labtip
 			labtip['text']=unicode("请勿重复打卡！\n", 'eucgb2312_cn')
 			labtip['fg']='red'
+			speak("RepeatSend")
 			return # 不打断读秒
 		else:
 			gpreid = id
@@ -471,19 +505,23 @@ def dealsend(id):
 		if sendjson['RetSucceed'] & sendjson['Succeed']:
 			if breceive() or bfixreceive():
 				labtip['text']=unicode("领用成功！\n", 'eucgb2312_cn')
+				speak("ReceiveSuccess")
 			else:
 				labtip['text']=unicode("消费成功！\n", 'eucgb2312_cn')
+				speak("ConsumeSuccess")
 			labtip['fg']='#08b439'
 			show10sec()
 		else:
 			clearAll()
 			labtip['text']=sendjson['Message']
 			labtip['fg']='red'
+			speak("OperationFail")
 			show10sec()
 	else:
 		labtip['text']=unicode("获取工卡接口错误，请联系助理！", 'eucgb2312_cn')
 		labtip['fg']='red'
 		edit.delete(0,len(edit.get()))
+		speak("OperationFail")
 		show10sec()
 		print 'err'
 
@@ -598,6 +636,7 @@ def worker(*arg):
 		gpreid = ''
 		labtip['text']=unicode("网络异常，请联系助理！", 'eucgb2312_cn')
 		labtip['fg']='red'
+		speak("OperationFail")
 		edit.delete(0,len(edit.get()))
 		global gdisable
 		gdisable = True
