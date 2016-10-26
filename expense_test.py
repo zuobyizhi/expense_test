@@ -57,7 +57,7 @@ def jparser(json):
 		return json.loads(json.decode('gb18030').encode('utf8'))
 	except:
 		return []
-		
+
 def bconsume():
 	global gtype
 	return gtype == '0'
@@ -142,12 +142,13 @@ class Speaker:
 			return # speaker¹Ø±Õ
 		try:
 			source=pyglet.media.load(file)
-			self.player.queue(source)
-			self.player.play()
+			# self.player.queue(source)
+			# self.player.play()
+			source.play()
 		except:
 			print "speaker except."
 			traceback.print_exc()
-		
+
 speaker = Speaker()
 
 def speak(file):
