@@ -75,11 +75,11 @@ def bfixreceive():
 	return gtype == '3'
 	
 def maketype(_use):
-	if _use == unicode("领用", 'eucgb2312_cn'):
+	if _use == guizh("领用"):
 		return '1'
-	elif _use == unicode("固定消费", 'eucgb2312_cn'):
+	elif _use == guizh("固定消费"):
 		return '2'
-	elif _use == unicode("固定领用", 'eucgb2312_cn'):
+	elif _use == guizh("固定领用"):
 		return '3'
 	else:
 		return '0'
@@ -133,17 +133,14 @@ goodsRecorder = GoodsRecorder()
 
 # ------------语音------------begin
 class Speaker:
-	player = ""
 	opened = True
 	def __init__(self):
-		self.player = pyglet.media.Player()
+		pass
 	def speak(self,file):
 		if not self.opened:
 			return # speaker关闭
 		try:
 			source=pyglet.media.load(file)
-			# self.player.queue(source)
-			# self.player.play()
 			source.play()
 		except:
 			print "speaker except."
@@ -182,7 +179,7 @@ def initmacinfo(mj):
 		global gdisable
 		global gerrormsg
 		gdisable = True
-		gerrormsg = unicode("网络连接失败。")
+		gerrormsg = guizh("网络连接失败。")
 
 macinfo=httpget('/warehouse/machine/info')
 try:
@@ -195,7 +192,7 @@ except Exception:
 	global gdisable
 	global gerrormsg
 	gdisable = True
-	gerrormsg = unicode("网络连接失败。")
+	gerrormsg = guizh("网络连接失败。")
 
 def getMacInfo():
 	global macjson
@@ -267,7 +264,7 @@ def getMacInfo():
 		global edit
 		global gpreid
 		gpreid = ''
-		labtip['text']=unicode("网络异常，请联系助理！", 'eucgb2312_cn')
+		labtip['text']=guizh("网络异常，请联系助理！")
 		labtip['fg']='red'
 		edit.delete(0,len(edit.get()))
 
@@ -283,7 +280,7 @@ macinfotimerstart()
 root = Tk()
 root.attributes("-fullscreen", True)
 print "root: "+str(root['width'])+","+str(root['height'])
-root.title(unicode('内部消费系统','eucgb2312_cn'))
+root.title(guizh('内部消费系统'))
 
 frametop=Frame(root,height=60,width=800)
 frametop.pack(side = TOP, pady=30)
@@ -298,7 +295,7 @@ frameright.pack_propagate(0)
 labtitle = Label(frametop,text=guizh('内部消费系统'), font = ("SimSun, 36"))
 labtitle.pack( side = TOP, pady=0)
 
-L1 = Label(frameleft, text=unicode('系统提示','eucgb2312_cn'), font=("SimSun, 30"),anchor='w')
+L1 = Label(frameleft, text=guizh('系统提示'), font=("SimSun, 30"),anchor='w')
 L1.pack( side = TOP,fill='x',pady=0)
 f1=Frame(frameleft,height=3,bg='#e9e9e9')
 f1.pack(side = TOP,fill='x', padx=0)
@@ -306,9 +303,9 @@ f1.pack_propagate(0)
 f11=Frame(f1,height=3,width=160,bg='#00c0ff')
 f11.pack(side = LEFT, padx=0)
 f11.pack_propagate(0)
-labtip = Label(frameleft,wraplength=380,fg='#333333',height=3, text=unicode('请扫描物品条码\n','eucgb2312_cn'), font=("SimSun, 18"),anchor='nw',justify='left')
+labtip = Label(frameleft,wraplength=380,fg='#333333',height=3, text=guizh('请扫描物品条码\n'), font=("SimSun, 18"),anchor='nw',justify='left')
 labtip.pack( side = TOP,fill='x',pady=0,padx=0)
-L2 = Label(frameleft, text=unicode('物品信息','eucgb2312_cn'), font=("SimSun, 30"),anchor='w')
+L2 = Label(frameleft, text=guizh('物品信息'), font=("SimSun, 30"),anchor='w')
 L2.pack( side = TOP,fill='x',pady=0)
 f2=Frame(frameleft,height=3,bg='#e9e9e9')
 f2.pack(side = TOP,fill='x', padx=0)
@@ -316,13 +313,13 @@ f2.pack_propagate(0)
 f21=Frame(f2,height=3,width=160,bg='#00c0ff')
 f21.pack(side = LEFT, padx=0)
 f21.pack_propagate(0)
-labgood = Label(frameleft,fg='#333333',wraplength=380,height=3, text=unicode('\n\n\n','eucgb2312_cn'), font=("SimSun, 16"),anchor='nw',justify='left')
+labgood = Label(frameleft,fg='#333333',wraplength=380,height=3, text=guizh('\n\n\n'), font=("SimSun, 16"),anchor='nw',justify='left')
 labgood.pack( side = TOP,fill='x',pady=0,padx=0)
-#L3 = Label(frameleft, text=unicode('','eucgb2312_cn'), font=("SimSun, 40"),fg='red')
+#L3 = Label(frameleft, text=guizh(''), font=("SimSun, 40"),fg='red')
 #L3.pack( side = TOP,pady=10)
-L3 = Label(root, text=unicode('','eucgb2312_cn'), font=("SimSun, 40"),fg='red')
+L3 = Label(root, text=guizh(''), font=("SimSun, 40"),fg='red')
 L3.place(relx=0.8,y=70)
-L4 = Label(frameleft, text=unicode('条形码/工卡','eucgb2312_cn'), font=("SimSun, 30"),anchor='w')
+L4 = Label(frameleft, text=guizh('条形码/工卡'), font=("SimSun, 30"),anchor='w')
 L4.pack( side = TOP,fill='x',pady=0)
 f3=Frame(frameleft,height=3,bg='#e9e9e9')
 f3.pack(side = TOP,fill='x', padx=0)
@@ -334,25 +331,25 @@ edit = Entry(frameleft, bd =0, width=60, font=("SimSun, 22"))
 edit.pack(side = TOP,pady=10)
 edit.focus()
 
-#L6= Label(frameright, text=unicode(' 温馨提示','eucgb2312_cn'),justify='left', font=("SimSun, 18"),fg='white',bg='#00c0ff',anchor='w')
+#L6= Label(frameright, text=guizh(' 温馨提示'),justify='left', font=("SimSun, 18"),fg='white',bg='#00c0ff',anchor='w')
 #L6.pack( side = TOP,pady=0,padx=0,fill='x')
-L5= Label(frameright, text=unicode(' 系统公告','eucgb2312_cn'),fg='white',bg='#00c0ff',justify='left', font=("SimSun, 22"),anchor='w')
+L5= Label(frameright, text=guizh(' 系统公告'),fg='white',bg='#00c0ff',justify='left', font=("SimSun, 22"),anchor='w')
 L5.pack( side = TOP,pady=0,padx=0,fill='x')
 f4=Frame(frameright,height=190,bg='white')
 f4.pack(side = TOP,fill='x', padx=0)
 f4.pack_propagate(0)
-labsysnote = Label(f4,fg='#333333',wraplength=320,height=5,justify='left', text=unicode('\n\n\n\n\n','eucgb2312_cn'), font=("SimSun, 16"),bg='white',anchor='nw')
+labsysnote = Label(f4,fg='#333333',wraplength=320,height=5,justify='left', text=guizh('\n\n\n\n\n'), font=("SimSun, 16"),bg='white',anchor='nw')
 labsysnote.pack( side = TOP,pady=10,padx=16,fill='x')
 if gnote != '':
 	labsysnote['text']=gnote
-L9 = Label(frameright, text=unicode('','eucgb2312_cn'), font=("SimSun, 20"),fg='red')
+L9 = Label(frameright, text=guizh(''), font=("SimSun, 20"),fg='red')
 L9.pack( side = TOP,pady=0)
-L6 = Label(frameright,compound = 'left',justify='left',fg='white',bg='#00c0ff', text=unicode(' 操作指南','eucgb2312_cn'), font=("SimSun, 22"),anchor='w')
+L6 = Label(frameright,compound = 'left',justify='left',fg='white',bg='#00c0ff', text=guizh(' 操作指南'), font=("SimSun, 22"),anchor='w')
 L6.pack( side = TOP,pady=0,padx=0,fill='x')
 f5=Frame(frameright,height=140,bg='white')
 f5.pack(side = TOP,fill='x', padx=0)
 f5.pack_propagate(0)
-labctrltitle = Label(f5,bg='white',height=5,anchor='nw',justify='left',fg='#333333', text=unicode('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费','eucgb2312_cn'), font=("SimSun, 16"))
+labctrltitle = Label(f5,bg='white',height=5,anchor='nw',justify='left',fg='#333333', text=guizh('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费'), font=("SimSun, 16"))
 labctrltitle.pack( side = TOP,pady=10,padx=16,fill='x')
 
 #连接口
@@ -390,8 +387,8 @@ def getgoodinfo(code):
 			ggoodcode=mj['Message']['goodsID']
 			ggoodprice = str(mj['Message']['goodsPrice'])
 			if goodsRecorder.full(ggoodcode):
-				labtip['text']=unicode("你已不能添加新物品。")
-				labgood['text']=unicode("您最多可以添加10种商品\n已添加", 'eucgb2312_cn') + str(goodsRecorder.goodsnum) + unicode("件商品	总价格:",'eucgb2312_cn') + ggoodprice + unicode("元",'eucgb2312_cn')
+				labtip['text']=guizh("你已不能添加新物品。")
+				labgood['text']=guizh("您最多可以添加10种商品\n已添加") + str(goodsRecorder.goodsnum) + guizh("件商品	总价格:") + ggoodprice + guizh("元")
 				speak("Full")
 			elif bconsume():
 				global goodsRecorder
@@ -399,23 +396,23 @@ def getgoodinfo(code):
 				ggoodprice = str(goodsRecorder.goodstotal)
 				speak("ScanSuccess")
 				if goodsRecorder.goodsnum == 1:
-					labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName'] + unicode("\n价格:",'eucgb2312_cn') + ggoodprice + unicode("元",'eucgb2312_cn')
+					labgood['text']=guizh("物品名称:") + mj['Message']['goodsName'] + guizh("\n价格:") + ggoodprice + guizh("元")
 				else:
-					labgood['text']=unicode("您最多可以添加10种商品\n已添加", 'eucgb2312_cn') + str(goodsRecorder.goodsnum) + unicode("件商品	总价格:",'eucgb2312_cn') + ggoodprice + unicode("元",'eucgb2312_cn')
+					labgood['text']=guizh("您最多可以添加10种商品\n已添加") + str(goodsRecorder.goodsnum) + guizh("件商品	总价格:") + ggoodprice + guizh("元")
 			elif breceive():
 				global goodsRecorder
 				goodsRecorder.addgood(ggoodcode)
 				speak("ScanSuccess")
 				if goodsRecorder.goodsnum == 1:
-					labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName']
+					labgood['text']=guizh("物品名称:") + mj['Message']['goodsName']
 				else:
-					labgood['text']=unicode("您最多可以添加10种物品\n已添加", 'eucgb2312_cn') + str(goodsRecorder.goodsnum) + unicode("件物品",'eucgb2312_cn')
+					labgood['text']=guizh("您最多可以添加10种物品\n已添加") + str(goodsRecorder.goodsnum) + guizh("件物品")
 			elif bfixreceive():
-				labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName']
+				labgood['text']=guizh("物品名称:") + mj['Message']['goodsName']
 				speak("ScanSuccess")
 				return
 			else:
-				labgood['text']=unicode("物品名称:", 'eucgb2312_cn') + mj['Message']['goodsName'] + unicode("\n价格:",'eucgb2312_cn') + ggoodprice
+				labgood['text']=guizh("物品名称:") + mj['Message']['goodsName'] + guizh("\n价格:") + ggoodprice
 				speak("ScanSuccess")
 				return
 			# if bfixreceive() or bfixconsume():
@@ -433,10 +430,10 @@ def getgoodinfo(code):
 			global goodsRecorder
 			global labtip
 			if bconsume() and goodsRecorder.goodsnum>0:
-				labtip['text']=mj['Message'] + unicode("\n如需购买多件商品，请继续扫码。")
+				labtip['text']=mj['Message'] + guizh("\n如需购买多件商品，请继续扫码。")
 				labtip['fg']='#333333'
 			elif breceive() and goodsRecorder.goodsnum>0:
-				labtip['text']=mj['Message'] + unicode("\n如需领取多件物品，请继续扫码。")
+				labtip['text']=mj['Message'] + guizh("\n如需领取多件物品，请继续扫码。")
 				labtip['fg']='#333333'
 			else:
 				clearAll()
@@ -446,7 +443,7 @@ def getgoodinfo(code):
 			show10sec()
 	else:
 		global labtip
-		labtip['text']=unicode("查询物品接口错误，请联系助理！", 'eucgb2312_cn')
+		labtip['text']=guizh("查询物品接口错误，请联系助理！")
 		labtip['fg']='red'
 		global edit
 		edit.delete(0,len(edit.get()))
@@ -469,7 +466,7 @@ def dealsend(id):
 			print "repeat send."
 			edit.delete(0,len(edit.get()))
 			global labtip
-			labtip['text']=unicode("请勿重复打卡！\n", 'eucgb2312_cn')
+			labtip['text']=guizh("请勿重复打卡！\n")
 			labtip['fg']='red'
 			speak("RepeatSend")
 			return # 不打断读秒
@@ -505,10 +502,10 @@ def dealsend(id):
 		sendjson=json.loads(r.decode('gb18030').encode('utf8'))
 		if sendjson['RetSucceed'] & sendjson['Succeed']:
 			if breceive() or bfixreceive():
-				labtip['text']=unicode("领用成功！\n", 'eucgb2312_cn')
+				labtip['text']=guizh("领用成功！\n")
 				speak("ReceiveSuccess")
 			else:
-				labtip['text']=unicode("消费成功！\n", 'eucgb2312_cn')
+				labtip['text']=guizh("消费成功！\n")
 				speak("ConsumeSuccess")
 			labtip['fg']='#08b439'
 			show10sec()
@@ -519,7 +516,7 @@ def dealsend(id):
 			speak("OperationFail")
 			show10sec()
 	else:
-		labtip['text']=unicode("获取工卡接口错误，请联系助理！", 'eucgb2312_cn')
+		labtip['text']=guizh("获取工卡接口错误，请联系助理！")
 		labtip['fg']='red'
 		edit.delete(0,len(edit.get()))
 		speak("OperationFail")
@@ -548,20 +545,20 @@ def func(): # 15秒倒数
 	global goodsRecorder
 	global ggoodcode
 	# if goodsRecorder.full(ggoodcode):
-	#	labtip['text']=unicode("你已不能添加新物品。")
+	#	labtip['text']=guizh("你已不能添加新物品。")
 	if breceive():
 		# labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成领用。\n", 'eucgb2312_cn')
 		if goodsRecorder.full(ggoodcode):
-			labtip['text']=unicode("你已不能添加新物品。\n请在"+str(cur)+"秒内刷卡完成领用。", 'eucgb2312_cn')
+			labtip['text']=guizh("你已不能添加新物品。\n请在"+str(cur)+"秒内刷卡完成领用。")
 		else:
-			labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成领用；\n如需领取多件物品，请继续扫码。", 'eucgb2312_cn')
+			labtip['text']=guizh("请在"+str(cur)+"秒内刷卡完成领用；\n如需领取多件物品，请继续扫码。")
 		labtip['fg']='#333333'
 	elif bconsume():
 		# labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成消费，本次消费金额为" + ggoodprice + "元。", 'eucgb2312_cn')
 		if goodsRecorder.full(ggoodcode):
-			labtip['text']=unicode("你已不能添加新商品。\n请在"+str(cur)+"秒内刷卡完成消费。", 'eucgb2312_cn')
+			labtip['text']=guizh("你已不能添加新商品。\n请在"+str(cur)+"秒内刷卡完成消费。")
 		else:
-			labtip['text']=unicode("请在"+str(cur)+"秒内刷卡完成消费；\n如需购买多件商品，请继续扫码。", 'eucgb2312_cn')
+			labtip['text']=guizh("请在"+str(cur)+"秒内刷卡完成消费；\n如需购买多件商品，请继续扫码。")
 		labtip['fg']='#333333'
 	else:
 		pass
@@ -606,7 +603,7 @@ def clearAll():
 	L3['text']=''
 	gstate=''
 	if bconsume() or breceive():
-		labgood['text']=unicode("\n\n\n", 'eucgb2312_cn')
+		labgood['text']=guizh("\n\n\n")
 		ggoodcode=''
 		if cur==0:
 			global goodsRecorder
@@ -635,7 +632,7 @@ def worker(*arg):
 		#global edit
 		global gpreid
 		gpreid = ''
-		labtip['text']=unicode("网络异常，请联系助理！", 'eucgb2312_cn')
+		labtip['text']=guizh("网络异常，请联系助理！")
 		labtip['fg']='red'
 		speak("OperationFail")
 		edit.delete(0,len(edit.get()))
@@ -651,46 +648,46 @@ def initUI(macjson):
 	global labctrltitle
 	global gnormaltip
 	global labsysnote
-	if guse == unicode("领用", 'eucgb2312_cn'):
-		labtitle['text']=unicode("物资领用", 'eucgb2312_cn')
-		gnormaltip=unicode('刷卡后完成领用\n','eucgb2312_cn')
+	if guse == guizh("领用"):
+		labtitle['text']=guizh("物资领用")
+		gnormaltip=guizh('刷卡后完成领用\n')
 		labtip['text']=gnormaltip
 		gtype='1'
-		labctrltitle['text'] = unicode('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
+		labctrltitle['text'] = guizh('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成领用')
 		labsysnote['text'] = gnote
-		labgood['text']=unicode("\n\n\n", 'eucgb2312_cn')
-	elif guse == unicode("固定消费", 'eucgb2312_cn'):
+		labgood['text']=guizh("\n\n\n")
+	elif guse == guizh("固定消费"):
 		#labtitle['text']=unicode("固定消费", 'eucgb2312_cn')
 		gtype='2'
-		labtitle['text']=unicode("内部消费系统", 'eucgb2312_cn')
-		gnormaltip=unicode('刷卡后完成消费\n','eucgb2312_cn')
+		labtitle['text']=guizh("内部消费系统")
+		gnormaltip=guizh('刷卡后完成消费\n')
 		labtip['text']=gnormaltip
 		getgoodinfo(macjson['Message']['machineRemark'].encode('utf8'))
 		print macjson['Message']['machineRemark']
 		global gremark
 		gremark = macjson['Message']['machineRemark']
-		labctrltitle['text'] = unicode('在【读卡器】上刷卡完成消费', 'eucgb2312_cn')
+		labctrltitle['text'] = guizh('在【读卡器】上刷卡完成消费')
 		labsysnote['text'] = gnote
-	elif guse == unicode("固定领用", 'eucgb2312_cn'):
+	elif guse == guizh("固定领用"):
 		gtype='3'
-		labtitle['text']=unicode("物资领用", 'eucgb2312_cn')
-		gnormaltip=unicode('刷卡后完成领用\n','eucgb2312_cn')
+		labtitle['text']=guizh("物资领用")
+		gnormaltip=guizh('刷卡后完成领用\n')
 		labtip['text']=gnormaltip
 		getgoodinfo(macjson['Message']['machineRemark'].encode('utf8'))
 		print macjson['Message']['machineRemark']
 		global gremark
 		gremark = macjson['Message']['machineRemark']
-		labctrltitle['text'] = unicode('在【读卡器】上刷卡完成领用', 'eucgb2312_cn')
+		labctrltitle['text'] = guizh('在【读卡器】上刷卡完成领用')
 		labsysnote['text'] = gnote
 	else:
 		gtype='0'
-		labtitle['text']=unicode("内部消费系统", 'eucgb2312_cn')
-		labctrltitle['text'] = unicode('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费', 'eucgb2312_cn')
-		gnormaltip=unicode('请扫描物品条码\n','eucgb2312_cn')
+		labtitle['text']=guizh("内部消费系统")
+		labctrltitle['text'] = guizh('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费')
+		gnormaltip=guizh('请扫描物品条码\n')
 		labtip['text']=gnormaltip
 		labtip['fg']='#333333'
 		labsysnote['text'] = gnote
-		labgood['text']=unicode("\n\n\n", 'eucgb2312_cn')
+		labgood['text']=guizh("\n\n\n")
 
 initUI(macjson)
 
