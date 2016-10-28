@@ -9,6 +9,7 @@ import threading
 import sys
 import traceback
 import pyglet
+import time
 
 print sys.getdefaultencoding()
 if len(sys.argv) == 1:
@@ -90,13 +91,16 @@ class GoodsRecorder:
 	goodstotal = 0.0
 	def __init__(self):
 		self.clear()
-	def addgood(self,goodid,price=0.0):
+	def addgood(self,goodid,price=0.0,name=""):
 		self.goodsnum += 1
 		self.goodstotal += price
 		if goodid in self.goods:
-			self.goods[goodid] += 1
+			self.goods[goodid]["num"] += 1
 		else:
-			self.goods[goodid] = 1
+			self.goods[goodid] = {}
+			self.goods[goodid]["num"] = 1
+			self.goods[goodid]["price"] = price
+			self.goods[goodid]["name"] = name
 		return self
 	def full(self, goodid):
 		m = 2#10
@@ -117,10 +121,10 @@ class GoodsRecorder:
 		for i,g in enumerate(self.goods.keys()):
 			if i == 0:
 				strg = str(g)
-				strn = str(self.goods[g])
+				strn = str(self.goods[g]["num"])
 			else:
 				strg += "," + str(g)
-				strn += "," + str(self.goods[g])
+				strn += "," + str(self.goods[g]["num"])
 		return strg, strn
 	def number(self):
 		return self.goodsnum
@@ -142,6 +146,7 @@ class Speaker:
 		try:
 			source=pyglet.media.load(file)
 			source.play()
+			pass
 		except:
 			print "speaker except."
 			traceback.print_exc()
@@ -352,6 +357,52 @@ f5.pack_propagate(0)
 labctrltitle = Label(f5,bg='white',height=5,anchor='nw',justify='left',fg='#333333', text=guizh('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费'), font=("SimSun, 16"))
 labctrltitle.pack( side = TOP,pady=10,padx=16,fill='x')
 
+frametable=Frame(root,width=400,height=500,bg='white')
+# frametable.pack(side = RIGHT, padx=150)
+# frametable.pack_propagate(0)
+frametable.place(x=500, y=200)
+frametable.place_forget()
+listbox = Listbox(frametable, selectmode=EXTENDED,width=40,height=11,font=("SimSun, 18"))
+listbox.pack(side=TOP,fill='x',padx=0)
+listbox.insert(0, guizh(" "*6 + "已添加物品" + " "*10 + "单价" + " "*4 + "数量"))
+
+def rightFrameTurnOver(bGoodsList = True):
+	global frameright
+	global frametable
+	if bGoodsList:
+		frametable.place(x=700, y=300)
+		frameright.pack_forget()
+		tableAdd()
+	else:
+		try:
+			frametable.place(x=2500, y=200)
+			frameright.pack(side = RIGHT, padx=150)
+			frameright.pack_propagate(0)
+			global listbox
+			size = listbox.size()
+			if size > 1:
+				listbox.delete(1, size-1)
+		except:
+			traceback.print_exc()
+
+def tableAdd():
+	global frametable
+	global listbox
+	size = listbox.size()
+	if size > 1:
+		listbox.delete(1, size-1)
+	for i,g in enumerate(goodsRecorder.goods.keys()):
+		if i < 11:
+			name = goodsRecorder.goods[g]["name"]
+			nnn = len(name)
+			if nnn>10:
+				name = name.substring(0,8) + "..." + " "*6
+			else:
+				name = name + " "*(25-nnn*2)
+			listbox.insert(i+1, name + str(goodsRecorder.goods[g]["price"]) + " "*6 + str(goodsRecorder.goods[g]["num"]))
+		else:
+			return
+
 #连接口
 def getgoodinfo(code):
 	print "getgoodinfo code: "+code
@@ -392,21 +443,23 @@ def getgoodinfo(code):
 				speak("Full")
 			elif bconsume():
 				global goodsRecorder
-				goodsRecorder.addgood(ggoodcode, float(ggoodprice))
+				goodsRecorder.addgood(ggoodcode, float(ggoodprice), mj['Message']['goodsName'])
 				ggoodprice = str(goodsRecorder.goodstotal)
 				speak("ScanSuccess")
 				if goodsRecorder.goodsnum == 1:
 					labgood['text']=guizh("物品名称:") + mj['Message']['goodsName'] + guizh("\n价格:") + ggoodprice + guizh("元")
 				else:
 					labgood['text']=guizh("您最多可以添加10种商品\n已添加") + str(goodsRecorder.goodsnum) + guizh("件商品	总价格:") + ggoodprice + guizh("元")
+					rightFrameTurnOver()
 			elif breceive():
 				global goodsRecorder
-				goodsRecorder.addgood(ggoodcode)
+				goodsRecorder.addgood(ggoodcode, 0.0, mj['Message']['goodsName'])
 				speak("ScanSuccess")
 				if goodsRecorder.goodsnum == 1:
 					labgood['text']=guizh("物品名称:") + mj['Message']['goodsName']
 				else:
 					labgood['text']=guizh("您最多可以添加10种物品\n已添加") + str(goodsRecorder.goodsnum) + guizh("件物品")
+					rightFrameTurnOver()
 			elif bfixreceive():
 				labgood['text']=guizh("物品名称:") + mj['Message']['goodsName']
 				speak("ScanSuccess")
@@ -540,6 +593,8 @@ def func(): # 15秒倒数
 		return
 	global cur
 	global L3
+	global edit
+	edit.focus()
 	L3['text']=str(cur)
 	global labtip
 	global goodsRecorder
@@ -608,6 +663,7 @@ def clearAll():
 		if cur==0:
 			global goodsRecorder
 			goodsRecorder.clear()
+			rightFrameTurnOver(False)
 
 def worker(*arg):
 	#edit.delete(0,len(edit.get()))
