@@ -10,6 +10,7 @@ import sys
 import traceback
 import pyglet
 import time
+import ttk
 
 print sys.getdefaultencoding()
 if len(sys.argv) == 1:
@@ -358,13 +359,30 @@ labctrltitle = Label(f5,bg='white',height=5,anchor='nw',justify='left',fg='#3333
 labctrltitle.pack( side = TOP,pady=10,padx=16,fill='x')
 
 frametable=Frame(root,width=400,height=500,bg='white')
-# frametable.pack(side = RIGHT, padx=150)
-# frametable.pack_propagate(0)
 frametable.place(x=500, y=200)
 frametable.place_forget()
-listbox = Listbox(frametable, selectmode=EXTENDED,width=40,height=11,font=("SimSun, 18"))
-listbox.pack(side=TOP,fill='x',padx=0)
-listbox.insert(0, guizh(" "*6 + "已添加物品" + " "*10 + "单价" + " "*4 + "数量"))
+cngoods = guizh("已添加物品")
+cnprice = guizh("单价")
+cnnum = guizh("数量")
+# tree = ttk.Treeview(frametable, columns=(cngoods,cnprice,cnnum))
+tree = ttk.Treeview(frametable, columns=(cnprice,cnnum))
+# tree.column(cngoods, width=300,anchor='center')
+tree.column(cnprice, width=100,anchor='center')
+tree.column(cnnum, width=100,anchor='center')
+# tree.heading(cngoods, text=cngoods)
+tree.heading(cnprice, text=cnprice)
+tree.heading(cnnum, text=cnnum)
+tree.pack(side=TOP,fill='x',padx=0)
+
+def treeDeleteAll():
+	global tree
+	try:
+		items = ['0','1','2','3','4','5','6','7','8','9']
+		for item in items:
+			if tree.exists(item):
+				tree.delete(item)
+	except:
+		traceback.print_exc()
 
 def rightFrameTurnOver(bGoodsList = True):
 	global frameright
@@ -378,32 +396,24 @@ def rightFrameTurnOver(bGoodsList = True):
 			frametable.place(x=2500, y=200)
 			frameright.pack(side = RIGHT, padx=150)
 			frameright.pack_propagate(0)
-			global listbox
-			size = listbox.size()
-			if size > 1:
-				listbox.delete(1, size-1)
+			treeDeleteAll()
 		except:
 			traceback.print_exc()
 
 def tableAdd():
 	global frametable
-	global listbox
-	size = listbox.size()
-	if size > 1:
-		listbox.delete(1, size-1)
+	treeDeleteAll()
 	for i,g in enumerate(goodsRecorder.goods.keys()):
 		if i < 11:
 			name = goodsRecorder.goods[g]["name"]
 			nnn = len(name)
 			if nnn>10:
-				name = name.substring(0,8) + "..." + " "*6
+				name = name.substring(0,8) + "..."
 			else:
-				name = name + " "*(25-nnn*2)
+				name = name
 			price = str(goodsRecorder.goods[g]["price"])
-			nnn = len(price)
-			if nnn<8:
-				price = " "*(4-int(nnn/2)) + str(goodsRecorder.goods[g]["price"]) + " "*(4-int(nnn/2))
-			listbox.insert(i+1, name + price + " "*2 + str(goodsRecorder.goods[g]["num"]))
+			global tree
+			tree.insert('', i, iid=str(i), text=name, values = (price , str(goodsRecorder.goods[g]["num"])))
 		else:
 			return
 
