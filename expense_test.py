@@ -370,7 +370,7 @@ def rightFrameTurnOver(bGoodsList = True):
 	global frameright
 	global frametable
 	if bGoodsList:
-		frametable.place(x=700, y=300)
+		frametable.place(x=700, y=200)
 		frameright.pack_forget()
 		tableAdd()
 	else:
@@ -399,7 +399,11 @@ def tableAdd():
 				name = name.substring(0,8) + "..." + " "*6
 			else:
 				name = name + " "*(25-nnn*2)
-			listbox.insert(i+1, name + str(goodsRecorder.goods[g]["price"]) + " "*6 + str(goodsRecorder.goods[g]["num"]))
+			price = str(goodsRecorder.goods[g]["price"])
+			nnn = len(price)
+			if nnn<8:
+				price = " "*(4-int(nnn/2)) + str(goodsRecorder.goods[g]["price"]) + " "*(4-int(nnn/2))
+			listbox.insert(i+1, name + price + " "*2 + str(goodsRecorder.goods[g]["num"]))
 		else:
 			return
 
