@@ -395,7 +395,7 @@ def rightFrameTurnOver(bGoodsList = True):
 	global frameright
 	global frametable
 	if bGoodsList:
-		frametable.place(x=700, y=200)
+		frametable.place(x=750, y=200)
 		frameright.pack_forget()
 		tableAdd()
 	else:
@@ -408,7 +408,6 @@ def rightFrameTurnOver(bGoodsList = True):
 			traceback.print_exc()
 
 def tableAdd():
-	global frametable
 	treeDeleteAll()
 	for i,g in enumerate(goodsRecorder.goods.keys()):
 		if i < 11:
