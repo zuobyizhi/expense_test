@@ -104,7 +104,7 @@ class GoodsRecorder:
 			self.goods[goodid]["name"] = name
 		return self
 	def full(self, goodid):
-		m = 2#10
+		m = 10
 		l = len(self.goods.keys())
 		if m > l:
 			print "f1"
@@ -358,21 +358,28 @@ f5.pack_propagate(0)
 labctrltitle = Label(f5,bg='white',height=5,anchor='nw',justify='left',fg='#333333', text=guizh('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费'), font=("SimSun, 16"))
 labctrltitle.pack( side = TOP,pady=10,padx=16,fill='x')
 
-frametable=Frame(root,width=400,height=500,bg='white')
+frametable=Frame(root,width=600,height=700,bg='white')
 frametable.place(x=500, y=200)
 frametable.place_forget()
 cngoods = guizh("已添加物品")
 cnprice = guizh("单价")
 cnnum = guizh("数量")
+style = ttk.Style()
+style.configure('Treeview', rowheight=38)
+style.configure('Treeview.Heading', height=40, background='#00C0FF',foreground='white', font=('SimSun', 18, 'bold'),padding=8)
 # tree = ttk.Treeview(frametable, columns=(cngoods,cnprice,cnnum))
-tree = ttk.Treeview(frametable, columns=(cnprice,cnnum))
+tree = ttk.Treeview(frametable, columns=(cnprice,cnnum),height="11",style='Treeview')
+tree.pack(expand=YES,fill=BOTH)
 # tree.column(cngoods, width=300,anchor='center')
+tree.column('#0', width=300,anchor='center')
 tree.column(cnprice, width=100,anchor='center')
 tree.column(cnnum, width=100,anchor='center')
 # tree.heading(cngoods, text=cngoods)
+tree.heading("#0", text=cngoods)
 tree.heading(cnprice, text=cnprice)
 tree.heading(cnnum, text=cnnum)
-tree.pack(side=TOP,fill='x',padx=0)
+# tree.pack(side=TOP,fill='x',padx=0)
+tree.tag_configure('item', font=('SimSun', 18, 'bold'))
 
 def treeDeleteAll():
 	global tree
@@ -407,13 +414,13 @@ def tableAdd():
 		if i < 11:
 			name = goodsRecorder.goods[g]["name"]
 			nnn = len(name)
-			if nnn>10:
+			if nnn>9:
 				name = name.substring(0,8) + "..."
 			else:
 				name = name
 			price = str(goodsRecorder.goods[g]["price"])
 			global tree
-			tree.insert('', i, iid=str(i), text=name, values = (price , str(goodsRecorder.goods[g]["num"])))
+			tree.insert('', i, iid=str(i), text=name, tags="item", values = (price , str(goodsRecorder.goods[g]["num"])))
 		else:
 			return
 
