@@ -371,7 +371,7 @@ style.configure('Treeview.Heading', height=40, background='#00C0FF',foreground='
 tree = ttk.Treeview(frametable, columns=(cnprice,cnnum),height="11",style='Treeview')
 tree.pack(expand=YES,fill=BOTH)
 # tree.column(cngoods, width=300,anchor='center')
-tree.column('#0', width=300,anchor='center')
+tree.column('#0', width=350,anchor='center')
 tree.column(cnprice, width=100,anchor='center')
 tree.column(cnnum, width=100,anchor='center')
 # tree.heading(cngoods, text=cngoods)
@@ -379,7 +379,7 @@ tree.heading("#0", text=cngoods)
 tree.heading(cnprice, text=cnprice)
 tree.heading(cnnum, text=cnnum)
 # tree.pack(side=TOP,fill='x',padx=0)
-tree.tag_configure('item', font=('SimSun', 18, 'bold'))
+tree.tag_configure('item', font=('SimSun', 16, 'bold'))
 
 def treeDeleteAll():
 	global tree
@@ -413,8 +413,8 @@ def tableAdd():
 		if i < 11:
 			name = goodsRecorder.goods[g]["name"]
 			nnn = len(name)
-			if nnn>9:
-				name = name.substring(0,8) + "..."
+			if nnn>17:
+				name = name[:8] + "..." + name[-8:]
 			else:
 				name = name
 			price = str(goodsRecorder.goods[g]["price"])
@@ -459,6 +459,7 @@ def getgoodinfo(code):
 			ggoodprice = str(mj['Message']['goodsPrice'])
 			if goodsRecorder.full(ggoodcode):
 				labtip['text']=guizh("你已不能添加新物品。")
+				ggoodprice = str(goodsRecorder.goodstotal)
 				labgood['text']=guizh("您最多可以添加10种商品\n已添加") + str(goodsRecorder.goodsnum) + guizh("件商品	总价格:") + ggoodprice + guizh("元")
 				speak("Full")
 			elif bconsume():
@@ -468,6 +469,7 @@ def getgoodinfo(code):
 				speak("ScanSuccess")
 				if goodsRecorder.goodsnum == 1:
 					labgood['text']=guizh("物品名称:") + mj['Message']['goodsName'] + guizh("\n价格:") + ggoodprice + guizh("元")
+					rightFrameTurnOver(False)
 				else:
 					labgood['text']=guizh("您最多可以添加10种商品\n已添加") + str(goodsRecorder.goodsnum) + guizh("件商品	总价格:") + ggoodprice + guizh("元")
 					rightFrameTurnOver()
@@ -477,6 +479,7 @@ def getgoodinfo(code):
 				speak("ScanSuccess")
 				if goodsRecorder.goodsnum == 1:
 					labgood['text']=guizh("物品名称:") + mj['Message']['goodsName']
+					rightFrameTurnOver(False)
 				else:
 					labgood['text']=guizh("您最多可以添加10种物品\n已添加") + str(goodsRecorder.goodsnum) + guizh("件物品")
 					rightFrameTurnOver()
@@ -563,7 +566,9 @@ def dealsend(id):
 	global goodsRecorder
 	print "1"
 	gsid, gsnum = goodsRecorder.getString()
-	print "2"
+	print "2: " + gsid + " " + gsnum + " " + str(ggoodcode)
+	if bfixconsume() or bfixreceive():
+		gsid = ggoodcode
 	data['goodsID'] = gsid
 	data['goodsNumber'] = gsnum
 	print data
@@ -582,6 +587,8 @@ def dealsend(id):
 				speak("ConsumeSuccess")
 			labtip['fg']='#08b439'
 			show10sec()
+			global goodsRecorder
+			goodsRecorder.clear()
 		else:
 			clearAll()
 			labtip['text']=sendjson['Message']
