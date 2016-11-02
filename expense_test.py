@@ -151,6 +151,8 @@ class Speaker:
 		except:
 			print "speaker except."
 			traceback.print_exc()
+			global edit
+			edit.focus()
 
 speaker = Speaker()
 
@@ -712,7 +714,7 @@ def worker(*arg):
 			getgoodinfo(tx)
 	except:
 		global labtip
-		#global edit
+		global edit
 		global gpreid
 		gpreid = ''
 		labtip['text']=guizh("网络异常，请联系助理！")
@@ -722,6 +724,7 @@ def worker(*arg):
 		global gdisable
 		gdisable = True
 		traceback.print_exc()
+		edit.focus()
 
 def initUI(macjson):
 	global gtype
