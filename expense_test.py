@@ -11,6 +11,7 @@ import traceback
 import pyglet
 import time
 import ttk
+import ConfigParser
 
 print sys.getdefaultencoding()
 if len(sys.argv) == 1:
@@ -41,6 +42,7 @@ macjson=[]
 timer=''
 gpreid=''
 gremark=''
+gtest=False
 
 #util
 def httpget(url):
@@ -158,9 +160,50 @@ speaker = Speaker()
 
 def speak(file):
 	global speaker
-	f = "yuyin/%s.wav"%file
+	f = "./yuyin/%s.wav"%file
 	speaker.speak(f)
 # ------------语音------------end
+
+# ------------ini------------begin
+class Config:
+	def __init__(self, path):
+		self.path = path
+		self.cf = ConfigParser.ConfigParser()
+		self.cf.read(self.path)
+	def get(self, field, key, default=""):
+		result = ""
+		try:
+			result = self.cf.get(field, key)
+		except:
+			result = default
+		return result
+	def set(self, field, key, value):
+		try:
+			self.cf.set(field, key, value)
+			self.cf.write(open(self.path,'w'))
+		except:
+			print "3"
+			traceback.print_exc()
+			return False
+		return True
+
+ini = Config("./ini.ini")
+v = ini.get("speak", "open", "1")
+if v == "0":
+	print "1"
+	speaker.opened = False
+else:
+	print "2"
+	speaker.opened = True
+
+gtest = ("0" != str(ini.get("connect", "test", "0")).strip())
+if gtest:
+	print "1"
+	hosturl='http://testxingzheng.oa.com:8972'
+else:
+	print "2"
+	hosturl='http://xingzheng.oa.com'
+# ------------ini------------end
 
 #init
 def initmacinfo(mj):
@@ -286,6 +329,7 @@ macinfotimerstart()
 
 #GUI
 root = Tk()
+# root = Toplevel()
 root.attributes("-fullscreen", True)
 print "root: "+str(root['width'])+","+str(root['height'])
 root.title(guizh('内部消费系统'))
@@ -305,6 +349,8 @@ labtitle.pack( side = TOP, pady=0)
 
 L1 = Label(frameleft, text=guizh('系统提示'), font=("SimSun, 30"),anchor='w')
 L1.pack( side = TOP,fill='x',pady=0)
+if gtest:
+	L1["text"] = guizh("系统提示(测试版)")
 f1=Frame(frameleft,height=3,bg='#e9e9e9')
 f1.pack(side = TOP,fill='x', padx=0)
 f1.pack_propagate(0)
@@ -359,6 +405,36 @@ f5.pack(side = TOP,fill='x', padx=0)
 f5.pack_propagate(0)
 labctrltitle = Label(f5,bg='white',height=5,anchor='nw',justify='left',fg='#333333', text=guizh('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费'), font=("SimSun, 16"))
 labctrltitle.pack( side = TOP,pady=10,padx=16,fill='x')
+
+imgClosed = PhotoImage(file="./image/closed.gif")
+imgOpened = PhotoImage(file="./image/opened.gif")
+def clickSpeakBtn():
+	global speaker
+	global ini
+	global imgClosed
+	global imgOpened
+	if speaker.opened:
+		if ini.set("speak", "open", "0"):
+			speaker.opened = False
+			# btn['text'] = guizh('打开语音')
+			btn['image'] = imgClosed
+	else:
+		if ini.set("speak", "open", "1"):
+			speaker.opened = True
+			# btn['text'] = guizh('关闭语音')
+			btn['image'] = imgOpened
+btn = Button(root, text=guizh(''), font=("SimSun, 20"),height=48,width=48,command=clickSpeakBtn)
+if "0" != ini.get("speak", "show", "0"):
+	btn.place(relx=0.05,y=40)
+	print "show true"
+else:
+	print "show false"
+if speaker.opened:
+	# btn['text'] = guizh('关闭语音')
+	btn['image'] = imgOpened
+else:
+	# btn['text'] = guizh('打开语音')
+	btn['image'] = imgClosed
 
 frametable=Frame(root,width=600,height=700,bg='white')
 frametable.place(x=500, y=200)
@@ -487,11 +563,11 @@ def getgoodinfo(code):
 					rightFrameTurnOver()
 			elif bfixreceive():
 				labgood['text']=guizh("物品名称:") + mj['Message']['goodsName']
-				speak("ScanSuccess")
+				# speak("ScanSuccess")
 				return
 			else:
 				labgood['text']=guizh("物品名称:") + mj['Message']['goodsName'] + guizh("\n价格:") + ggoodprice
-				speak("ScanSuccess")
+				# speak("ScanSuccess")
 				return
 			# if bfixreceive() or bfixconsume():
 			#	return # 固定项目获取物品不倒数
@@ -711,7 +787,11 @@ def worker(*arg):
 		if len(tx) == 10:
 			dealsend(tx)
 		else:
-			getgoodinfo(tx)
+			if bfixconsume() or bfixreceive():
+				clearAll()
+				edit.delete(0,len(edit.get()))
+			else:
+				getgoodinfo(tx)
 	except:
 		global labtip
 		global edit
