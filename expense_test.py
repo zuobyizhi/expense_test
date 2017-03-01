@@ -8,10 +8,35 @@ import json
 import threading
 import sys
 import traceback
-import pyglet
+# import pyglet
 import time
 import ttk
 import ConfigParser
+# import logging
+import os
+
+def abspath():
+	ABSPATH=os.path.abspath(sys.argv[0])
+	ABSPATH=os.path.dirname(ABSPATH)+"/"
+	return ABSPATH
+	
+sys.path.append(abspath())
+import pyglet
+
+import shutil
+try:
+	shutil.copy(abspath()+"libavbin.so", os.path.expanduser('~')+"/libavbin.so")
+	shutil.copy(abspath()+"libavbin.so.11", os.path.expanduser('~')+"/libavbin.so.11")
+except:
+	print "copy error."
+
+# logging.basicConfig(level=logging.DEBUG,
+#				format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+#				datefmt='%a, %d %b %Y %H:%M:%S',
+#				filename=abspath() + 'expense.log',
+#				filemode='w')
+
+# logging.debug('log1')
 
 print sys.getdefaultencoding()
 if len(sys.argv) == 1:
@@ -160,7 +185,8 @@ speaker = Speaker()
 
 def speak(file):
 	global speaker
-	f = "./yuyin/%s.wav"%file
+	# f = "./yuyin/%s.wav"%file
+	f = abspath() + "yuyin/%s.wav"%file
 	speaker.speak(f)
 # ------------语音------------end
 
@@ -187,7 +213,10 @@ class Config:
 			return False
 		return True
 
-ini = Config("./ini.ini")
+# logging.debug('log before load ini')
+# ini = Config("./ini.ini")
+ini = Config(abspath() + "ini.ini")
+# logging.debug('log after load ini')
 v = ini.get("speak", "open", "1")
 if v == "0":
 	print "1"
@@ -406,8 +435,12 @@ f5.pack_propagate(0)
 labctrltitle = Label(f5,bg='white',height=5,anchor='nw',justify='left',fg='#333333', text=guizh('1.使用【扫码枪】读取条形码\n2.核对物品信息\n3.在【读卡器】上刷卡完成消费'), font=("SimSun, 16"))
 labctrltitle.pack( side = TOP,pady=10,padx=16,fill='x')
 
-imgClosed = PhotoImage(file="./image/closed.gif")
-imgOpened = PhotoImage(file="./image/opened.gif")
+# logging.debug('log before load gif')
+# imgClosed = PhotoImage(file="./image/closed.gif")
+# imgOpened = PhotoImage(file="./image/opened.gif")
+imgClosed = PhotoImage(file=abspath() + "image/closed.gif")
+imgOpened = PhotoImage(file=abspath() + "image/opened.gif")
+# logging.debug('log after load gif')
 def clickSpeakBtn():
 	global speaker
 	global ini
@@ -574,10 +607,10 @@ def getgoodinfo(code):
 			global cur
 			global gstate
 			if gstate=='15':
-				cur=15
+				cur=10
 				return
 			gstate = '15'
-			cur=15
+			cur=10
 			#timerstart()
 			func()
 		else:
@@ -860,6 +893,13 @@ initUI(macjson)
 if gdisable:
 	labtip['text']=gerrormsg
 	edit.config(state='disabled')
+
+def myExit(*arg):
+	print "alt+F4"
+	# sys.exit(1)
+	os._exit(0)
+# root.bind('<Escape>',myExit)
+root.bind('<Destroy>',myExit)
 
 root.bind('<Return>',worker)
 root.mainloop()
